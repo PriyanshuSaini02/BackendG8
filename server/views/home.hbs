@@ -14,6 +14,16 @@
         <li>Name: {{user.name}}</li>
         <li>Age: {{user.age}}</li>
     </ul>
+    <div>
+        <form action="/profile" method="post" enctype="multipart/form-data">
+            <input type="file" name="avatar">
+            <input type="Submit" value="Upload">
+        </form>
+        <form action="/photos/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="photos" multiple>
+            <input type="Submit" value="Upload">
+        </form>
+    </div>
 </body>
 
 </html>
