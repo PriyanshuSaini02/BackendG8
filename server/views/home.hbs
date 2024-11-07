@@ -21,9 +21,16 @@
         </form>
         <form action="/photos/upload" method="post" enctype="multipart/form-data">
             <input type="file" name="photos" multiple>
-            <input type="Submit" value="Upload">
+            <input type="submit" value="Upload">
         </form>
     </div>
+    {{#if imageUrl}}
+    <div>
+        <h2>Your Uploaded Image</h2>
+        <img src="{{imageUrl}}" alt="Uploaded Avatar" style="max-width: 200px;">
+    </div>
+    {{/if}}
+
 </body>
 
 </html>

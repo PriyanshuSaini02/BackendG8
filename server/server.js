@@ -5,6 +5,7 @@ const cors = require("cors");
 const path = require('path');
 const dotenv = require("dotenv").config();
 const multer = require('multer');
+const fs=require('fs');
 
 connectDb();
 const app = express();
@@ -20,7 +21,7 @@ hbs.registerPartials(path.join(__dirname, 'views/partials'));
 
 // Serve static files from 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+let imageUrls = [];
 // Configure Multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -63,34 +64,42 @@ app.get('/allusers', (req, res) => {
 });
 
 // Route for single file upload
-app.post('/profile', upload.single('avatar'), (req, res, next) => {
-    if (req.file) {
-        console.log(req.file);
-        return res.status(200).json({ message: "File uploaded successfully", file: req.file });
+
+app.post("/profile", upload.single("avatar"), function (req, res, next) {
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.");
     }
-    res.status(400).json({ message: "File upload failed" });
+    console.log(req.body);
+    console.log(req.file);
+
+    const fileName = req.file.filename;
+    const imageUrl = `/uploads/${ fileName }`;
+    imageUrls.push(imageUrl);
+    return res.render("allimages", {
+        imageUrls: imageUrls
+    });
+});
+
+app.get("/allimages", (req, res) => {
+    const imageUrls = [];
+    res.render("allimages", { imageUrls: imageUrls });
 });
 
 // Route for multiple file upload
 app.post('/photos/upload', upload.array('photos', 12), (req, res, next) => {
-    if (req.files) {
-        console.log(req.files);
-        return res.status(200).json({ message: "Files uploaded successfully", files: req.files });
+    if (req.files && req.files.length > 0) {
+        console.log(req.files); // Log the uploaded files array
+        // Loop through the uploaded files and create URLs
+        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+        // Pass the image URLs to the Handlebars view
+        return res.render("allimages", {
+            imageUrls: imageUrls
+        });
     }
     res.status(400).json({ message: "File upload failed" });
 });
 
-// File download route
-app.get('/download/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(__dirname, 'uploads', filename);
 
-    res.download(filePath, (err) => {
-        if (err) {
-            return res.status(404).json({ message: "File not found" });
-        }
-    });
-});
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
