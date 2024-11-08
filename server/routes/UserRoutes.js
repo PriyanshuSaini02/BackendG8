@@ -1,11 +1,13 @@
-const express=require("express");
-const router=express.Router();
+const { createToken } = require("../middleware/jwtMiddleware");
+const express = require("express");
+const router = express.Router();
 
-const{
+const {
     registerUser,
     loginUser
-}=require("../controllers/userController");
+} = require("../controllers/userController");
 
-router.post("/register", registerUser);
-router.post("/login",loginUser);
-module.exports=router;
+router.post("/register", registerUser, createToken);  // Register first, then create token
+router.post("/login", loginUser, createToken);        // Login first, then create token
+
+module.exports = router;

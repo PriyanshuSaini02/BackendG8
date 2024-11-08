@@ -5,7 +5,6 @@ const cors = require("cors");
 const path = require('path');
 const dotenv = require("dotenv").config();
 const multer = require('multer');
-const fs=require('fs');
 
 connectDb();
 const app = express();
@@ -98,8 +97,6 @@ app.post('/photos/upload', upload.array('photos', 12), (req, res, next) => {
     }
     res.status(400).json({ message: "File upload failed" });
 });
-
-
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
