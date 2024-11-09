@@ -7,7 +7,6 @@ const {
     loginUser
 } = require("../controllers/userController");
 
-router.post("/register", registerUser, createToken);  // Register first, then create token
-router.post("/login", loginUser, createToken);        // Login first, then create token
-
+router.post("/register", registerUser);
+router.post("/login", loginUser, createToken);
 module.exports = router;

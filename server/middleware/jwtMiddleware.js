@@ -2,7 +2,13 @@ const jwt = require('jsonwebtoken');//initialize jsonwebtoken
 
 //after successful register of user calling the login endpoint with the already registered user,it will create and return JWT token
 const createToken= (userData)=>{
-    return jwt.sign(userData,process.env.JWT_SECRET,{expiresIn:400000});
+    const token= jwt.sign(userData,process.env.JWT_SECRET,{expiresIn:400000});
+    // console.log(token)
+    return token;
+    // res.status(200).json({
+    //     message: "Token created successfully",
+    //     token: token
+    // });
 }
 
 // after loginUser, we are getting the token and for validating in jwt token,that it is correct or not,we will proceed with secure routes,to get/post/update/delete

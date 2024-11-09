@@ -1,18 +1,12 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
 const Doctor = require("../models/doctorDetailModel");
-require("dotenv").config();
+const { createToken } = require("../middleware/jwtMiddleware"); // Import the createToken function
 
+// Register a new doctor
 const registerDoctor = asyncHandler(async (req, res) => {
-    const { name,
-        email,
-        speciality,
-        phoneNumber,
-        experience,
-        address } = req.body;
+    const { name, email, speciality, phoneNumber, experience, address } = req.body;
 
-
-    if (!name ||!email ||!speciality ||!phoneNumber ||!experience||!address) {
+    if (!name || !email || !speciality || !phoneNumber || !experience || !address) {
         res.status(400);
         throw new Error("Please provide all fields");
     }
@@ -31,59 +25,30 @@ const registerDoctor = asyncHandler(async (req, res) => {
         address
     });
 
-    res.status(201).json({ message: "Doctor registered successfully", doctor })
+    // Generate token after successful registration
+    const token = createToken({ id: doctor._id, name: doctor.name, email: doctor.email });
+
+    res.status(201).json({
+        message: "Doctor registered successfully",
+        doctor,
+        token // Send the token in the response
+    });
+});
+
+// Get all doctors (secured route)
+const getAllDoctors = asyncHandler(async (req, res) => {
+    try {
+        // Only proceed if the token is valid
+        // You can implement the validateJwtToken middleware in the route
+
+        const doctors = await Doctor.find({}, "-password"); // Exclude password from response
+        res.status(200).json(doctors);
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving doctors", error });
+    }
 });
 
 module.exports = {
-    registerDoctor
-}
-// const asyncHandler = require("express-async-handler");
-// const Doctor = require("../models/doctorModels");
-
-// // Register a new doctor
-// const registerDoctor = asyncHandler(async (req, res) => {
-//     const { name, email, specialty, phoneNumber, experience, address } = req.body;
-
-//     if (!name || !email || !specialty || !phoneNumber || !experience || !address) {
-//         res.status(400);
-//         throw new Error("Please provide all required fields");
-//     }
-
-//     // Check if doctor already exists
-//     const doctorExists = await Doctor.findOne({ email });
-//     if (doctorExists) {
-//         return res.status(400).json({ message: "Doctor already exists with this email" });
-//     }
-
-//     // Create a new doctor instance
-//     const newDoctor = await Doctor.create({
-//         name,
-//         email,
-//         specialty,
-//         phoneNumber,
-//         experience,
-//         address
-//     });
-
-//     res.status(201).json({
-//         message: "Doctor registered successfully",
-//         doctor: newDoctor
-//     });
-// });
-
-// //get all docs
-// const getAllDoctors = asyncHandler(async (req, res) => {
-//     const doctors = await Doctor.find();
-//     res.status(200).json(doctors);
-// })
-// //get doctor by id
-// const getDoctorbyId = asyncHandler(async (req, res) => {
-//     const doctor = await Doctor.findById(req.params.id);
-
-//     if (!doctor) {
-//         res.status(404);
-//         throw new Error("Doctor not found");
-//     }
-//     res.status(200).json(doctor);
-// });
-// module.exports = { registerDoctor, getAllDoctors, getDoctorbyId };
+    registerDoctor,
+    getAllDoctors
+};

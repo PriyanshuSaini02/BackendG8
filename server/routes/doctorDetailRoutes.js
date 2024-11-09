@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-const { registerDoctor } = require("../controllers/doctorDetailController");
+const { registerDoctor, getAllDoctors } = require("../controllers/doctorDetailController");
 const { createToken } = require("../middleware/jwtMiddleware");
+const { validateJwtToken } = require("../middleware/jwtMiddleware");
 
-router.post("/register", registerDoctor, createToken); // createToken is applied after successful registration
+// Route for registering a doctor
+router.post("/register", registerDoctor, createToken);
 
-// You could define other routes here, for example:
-// router.get("/protected-route", validateJwtToken, someProtectedControllerFunction);
+// Route for getting all doctors
+router.get("/alldoctors", validateJwtToken,getAllDoctors);
 
 module.exports = router;
