@@ -41,6 +41,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', require('./routes/UserRoutes'));
 app.use('/api/doctor', require('./routes/doctorDetailRoutes'));
+app.use('/api/user/me', require('./routes/UserRoutes.js'));
+app.use('./api/user/update', require('./routes/UserRoutes.js'));
 
 app.get('/home', (req, res) => {
     res.render("home", {

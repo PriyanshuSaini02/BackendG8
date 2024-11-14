@@ -65,9 +65,61 @@ const loginUser = asyncHandler(async (req, res) => {
         token, // Include the token in the response
     });
 });
+const getUserProfile = asyncHandler(async (req, res) => {
+    try {
+        const email=req.body;
+        const data = await User.findOne({ email });
+
+        if (!data) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        res.status(200).json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const { name,email, phoneNumber,password } = req.body;
+
+    try {
+        const user = await User.findOne(email);
+
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        if (!name || !email || !password || !phoneNumber) {
+            res.status(400);
+            throw new Error("Please provide all fields");
+        }
+
+        user.name = name;
+        user.phoneNumber = phoneNumber;
+        user.email=email;
+        user.password=password;
+
+        res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                name: user.name,
+                email: user.email,
+                phoneNumber: user.phoneNumber
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 
 
 module.exports={
     registerUser,
-    loginUser
+    loginUser,
+    getUserProfile,
+    updateUserProfile
 }

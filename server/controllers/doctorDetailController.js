@@ -41,7 +41,7 @@ const getAllDoctors = asyncHandler(async (req, res) => {
         // Only proceed if the token is valid
         // You can implement the validateJwtToken middleware in the route
 
-        const doctors = await Doctor.find({}, "-password"); // Exclude password from response
+        const doctors = await Doctor.find({}); // Exclude password from response
         res.status(200).json(doctors);
     } catch (error) {
         res.status(500).json({ message: "Error retrieving doctors", error });
